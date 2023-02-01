@@ -1,8 +1,8 @@
+import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-import time
-from scrapers.nutmeg import *
+from scrapers.nutmeg import Nutmeg
 from utils.secrets import read_secrets
 
 if __name__ == "__main__":
