@@ -32,7 +32,7 @@ class Nutmeg:
                 email = wait.until(EC.element_to_be_clickable((By.ID, "username")))
                 email.send_keys(self.email)
 
-                password = driver.find_element_by_id("password")
+                password = wait.until(EC.element_to_be_clickable((By.ID, "password")))
                 password.send_keys(self.passwd)
 
                 # screenshot = driver.get_screenshot_as_png()
@@ -40,8 +40,13 @@ class Nutmeg:
                 #     f.write(screenshot)
 
                 # Submit the form
-                submit = driver.find_element_by_xpath(
-                    "/html/body/div[3]/div/main/section/div/div/div/form/div[2]/button"
+                submit = wait.until(
+                    EC.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            "/html/body/div[3]/div/main/section/div/div/div/form/div[2]/button",
+                        )
+                    )
                 )
                 submit.click()
 
