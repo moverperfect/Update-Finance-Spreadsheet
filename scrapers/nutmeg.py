@@ -1,6 +1,3 @@
-# pylint: disable=R0903
-# pylint: disable=W0718
-"""Module providing logging"""
 import logging
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -44,7 +41,7 @@ class Nutmeg:
 
                 # Submit the form
                 submit = driver.find_element_by_xpath(
-                    "//form/div[@class='c90e953d1']/button"
+                    "/html/body/div[3]/div/main/section/div/div/div/form/div[2]/button"
                 )
                 submit.click()
 
