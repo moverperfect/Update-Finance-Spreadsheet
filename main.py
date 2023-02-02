@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     service = ChromeService(executable_path=ChromeDriverManager().install())
 
-    driver = webdriver.Chrome(executable_path=service.path)
+    driver = webdriver.Chrome(service=service)
 
     nutmeg = Nutmeg(driver, secrets["NUTMEG_EMAIL"], secrets["NUTMEG_PASSWORD"])
 
