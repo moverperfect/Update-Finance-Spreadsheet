@@ -152,25 +152,26 @@ class Hargreaves:
         # For each stock, grab name, units, price, value, and cost
         for x in range(1, len(stocks)):
             stock_data = {}
+            const_table_row = '//*[@id="holdings-table"]/tbody/tr['
             stock_data["stock"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="holdings-table"]/tbody/tr[' + str(x) + "]/td[1]/div/a/span",
+                const_table_row + str(x) + "]/td[1]/div/a/span",
             ).text
             stock_data["units"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="holdings-table"]/tbody/tr[' + str(x) + "]/td[2]/span",
+                const_table_row + str(x) + "]/td[2]/span",
             ).text
             stock_data["price(p)"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="holdings-table"]/tbody/tr[' + str(x) + "]/td[3]/span",
+                const_table_row + str(x) + "]/td[3]/span",
             ).text
             stock_data["value"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="holdings-table"]/tbody/tr[' + str(x) + "]/td[4]/span/span",
+                const_table_row + str(x) + "]/td[4]/span/span",
             ).text
             stock_data["cost"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="holdings-table"]/tbody/tr[' + str(x) + "]/td[5]/span",
+                const_table_row + str(x) + "]/td[5]/span",
             ).text
             stocks_data.append(stock_data)
 
@@ -206,33 +207,34 @@ class Hargreaves:
         # For each transaction, grab the relevent transaction data
         for x in range(1, len(transactions)):
             transaction_data = {}
+            const_table_row = '//*[@id="content-body-full"]/table/tbody/tr['
             transaction_data["tradeDate"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="content-body-full"]/table/tbody/tr[' + str(x) + "]/td[1]",
+                const_table_row + str(x) + "]/td[1]",
             ).text
             transaction_data["settleDate"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="content-body-full"]/table/tbody/tr[' + str(x) + "]/td[2]",
+                const_table_row + str(x) + "]/td[2]",
             ).text
             transaction_data["reference"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="content-body-full"]/table/tbody/tr[' + str(x) + "]/td[3]",
+                const_table_row + str(x) + "]/td[3]",
             ).text
             transaction_data["description"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="content-body-full"]/table/tbody/tr[' + str(x) + "]/td[4]",
+                const_table_row + str(x) + "]/td[4]",
             ).text
             transaction_data["unitCost"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="content-body-full"]/table/tbody/tr[' + str(x) + "]/td[5]",
+                const_table_row + str(x) + "]/td[5]",
             ).text
             transaction_data["quantity"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="content-body-full"]/table/tbody/tr[' + str(x) + "]/td[6]",
+                const_table_row + str(x) + "]/td[6]",
             ).text
             transaction_data["value"] = driver.find_element(
                 By.XPATH,
-                '//*[@id="content-body-full"]/table/tbody/tr[' + str(x) + "]/td[7]",
+                const_table_row + str(x) + "]/td[7]",
             ).text
             transactions_data.append(transaction_data)
 
