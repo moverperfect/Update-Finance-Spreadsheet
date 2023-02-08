@@ -1,5 +1,6 @@
 import logging
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from datetime import datetime, timedelta
@@ -9,9 +10,9 @@ import time
 class ShareWorks:
     """A class for scraping data from the Shareworks website"""
 
-    def __init__(self, driver, host, username, passwd):
+    def __init__(self, driver: webdriver.Chrome, host, username, passwd):
         """Initialize the instance variables for the class methods"""
-        self.driver = driver
+        self.driver: webdriver.Chrome = driver
         self.host = host
         self.username = username
         self.passwd = passwd
@@ -24,7 +25,7 @@ class ShareWorks:
                 # Navigate to the login page
                 driver.get("https://" + self.host + "/solium/servlet/userLogin.do")
 
-                wait = WebDriverWait(driver, 20)
+                wait = WebDriverWait(driver, 60)
 
                 time.sleep(2)
 
@@ -58,30 +59,60 @@ class ShareWorks:
                 )
 
                 # Navigae to the transaction history page
-                driver.get(
-                    "https://"
-                    + self.host
-                    + "/solium/servlet/ui/activity/reports/statement"
-                )
+                # driver.get(
+                #     "https://"
+                #     + self.host
+                #     + "/solium/servlet/ui/activity/reports/statement"
+                # )
+
+                time.sleep(2)
 
                 wait.until(
-                    EC.presence_of_element_located((By.XPATH, '//*[@id="start_date"]'))
-                ).send_keys((datetime.now() - timedelta(days=31)).strftime("%Y-%m-%d"))
-
-                submit = wait.until(
-                    EC.presence_of_element_located((By.XPATH, '//*[@id="submit_html"]'))
+                    EC.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            '//*[@id="main-navigation-item-activity"]/a/div/div[2]',
+                        )
+                    )
+                ).click()
+                time.sleep(2)
+                wait.until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH, '//*[@id="App_sticky_sub_nav"]/ul/li[2]/a')
+                    )
                 ).click()
 
-                rows = driver.find_elements_by_xpath(
-                    '//*[@id="Activity_table"]/tbody/tr'
+                iframe = driver.find_element(
+                    By.XPATH, '//*[@id="transaction-statement-iframe"]'
+                )
+                driver.switch_to.frame(iframe)
+                time.sleep(2)
+                submit = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="submit_html"]'))
+                )
+
+                # start_date = driver.find_element(By.XPATH, '//*[@id="start_date"]')
+                # start_date.clear()
+                # start_date.send_keys(
+                #     (datetime.now() - timedelta(days=31)).strftime("%Y-%m-%d")
+                # )
+                drp_date_select: Select = Select(
+                    driver.find_element(By.XPATH, '//*[@id="date_select"]')
+                )
+                drp_date_select.select_by_visible_text("All Available History")
+                time.sleep(1)
+                submit.click()
+
+                rows = driver.find_elements(
+                    By.XPATH, '//*[@id="Activity_table"]/tbody/tr'
                 )
 
                 transaction_data = []
 
                 # Iterate over the rows
-                for row in rows:
+                for row in rows[3:]:
                     # Find all the cells in the row
-                    cells = row.find_elements_by_xpath(".//td")
+                    cells = row.find_elements(By.XPATH, ".//td")
 
                     # Initialize a list to store the data for this row
                     row_data = []
@@ -94,16 +125,25 @@ class ShareWorks:
                     # Append the row data to the 2D array
                     transaction_data.append(row_data)
 
+                driver.switch_to.default_content()
+
                 # Navigate to the portfolio page
                 driver.get(
                     "https://" + self.host + "/solium/servlet/ui/portfolio/holdings"
                 )
 
-                wait.until(
+                iframe = wait.until(
                     EC.element_to_be_clickable(
-                        (By.XPATH, '//*[@id="display_currency"]')
+                        (By.XPATH, '//*[@id="portfolio-holdings-iframe"]')
                     )
-                ).send_keys("British Pounds Sterling")
+                )
+
+                driver.switch_to.frame(iframe)
+                time.sleep(1)
+                drp_display_currency: Select = Select(
+                    driver.find_element(By.XPATH, '//*[@id="display_currency"]')
+                )
+                drp_display_currency.select_by_visible_text("British Pounds Sterling")
 
                 exchange_rate = wait.until(
                     EC.presence_of_element_located(
@@ -128,6 +168,8 @@ class ShareWorks:
                         )
                     )
                 ).text
+
+                driver.switch_to.default_content()
 
                 # Return the data as a dictionary
                 return {
