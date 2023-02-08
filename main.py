@@ -1,8 +1,8 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from scrapers.nutmeg import Nutmeg
 from scrapers.shareworks import ShareWorks
 from utils.secrets import read_secrets
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 if __name__ == "__main__":
     secrets = read_secrets()
