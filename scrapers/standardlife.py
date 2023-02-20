@@ -5,6 +5,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+PENSION_SUMMARY_TAB = (
+    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
+)
+
 
 class StandardLife:
     """A class for scraping data from the Standard Life website"""
@@ -102,8 +106,7 @@ class StandardLife:
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
-                    + "/div[2]/div[1]/div/p",
+                    PENSION_SUMMARY_TAB + "/div[2]/div[1]/div/p",
                 )
             )
         ).text
@@ -114,8 +117,7 @@ class StandardLife:
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
-                    + "/div[2]/div[3]/div/p",
+                    PENSION_SUMMARY_TAB + "/div[2]/div[3]/div/p",
                 )
             )
         ).text
@@ -126,8 +128,7 @@ class StandardLife:
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
-                    + "/div[2]/div[4]/div/p",
+                    PENSION_SUMMARY_TAB + "/div[2]/div[4]/div/p",
                 )
             )
         ).text
