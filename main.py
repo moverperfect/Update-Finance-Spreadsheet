@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from scrapers.nutmeg import Nutmeg
 from scrapers.shareworks import ShareWorks
+from scrapers.standardlife import StandardLife
 from utils.secrets import read_secrets
 
 if __name__ == "__main__":
@@ -13,7 +14,7 @@ if __name__ == "__main__":
 
     nutmeg = Nutmeg(driver, secrets["NUTMEG_EMAIL"], secrets["NUTMEG_PASSWORD"])
 
-    data = nutmeg.scrape_data()
+    print(nutmeg.scrape_data())
 
     shareworks = ShareWorks(
         driver,
@@ -22,6 +23,12 @@ if __name__ == "__main__":
         secrets["SHAREWORKS_PASSWORD"],
     )
 
-    data = shareworks.scrape_data()
+    print(shareworks.scrape_data())
+
+    standard_life = StandardLife(
+        secrets["STANDARDLIFE_USERNAME"], secrets["STANDARDLIFE_PASSWORD"]
+    )
+
+    data = standard_life.scrape_data(driver)
 
     print(data)
