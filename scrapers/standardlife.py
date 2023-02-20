@@ -1,7 +1,7 @@
 import logging
 import time
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
@@ -24,9 +24,7 @@ class StandardLife:
             time.sleep(5)
 
             accept_cookie = wait.until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, '//*[@id="cookieAcceptAllLink"]')
-                )
+                EC.element_to_be_clickable((By.XPATH, '//*[@id="cookieAcceptAllLink"]'))
             )
 
             time.sleep(5)
@@ -38,7 +36,9 @@ class StandardLife:
                 EC.element_to_be_clickable(
                     (
                         By.XPATH,
-                        "/html/body/app-root/app-secure-container/tcs-main-nav/div/mat-sidenav-container/mat-sidenav-content/tcs-dashboard/div[2]/div[2]/tcs-hero-tile/div/a",
+                        "/html/body/app-root/app-secure-container/tcs-main-nav/div"
+                        + "/mat-sidenav-container/mat-sidenav-content/tcs-dashboard"
+                        + "/div[2]/div[2]/tcs-hero-tile/div/a",
                     )
                 )
             ).click()
@@ -102,7 +102,8 @@ class StandardLife:
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension/div[2]/div[1]/div/p',
+                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
+                    + "/div[2]/div[1]/div/p",
                 )
             )
         ).text
@@ -113,7 +114,8 @@ class StandardLife:
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension/div[2]/div[3]/div/p',
+                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
+                    + "/div[2]/div[3]/div/p",
                 )
             )
         ).text
@@ -124,7 +126,8 @@ class StandardLife:
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension/div[2]/div[4]/div/p',
+                    '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
+                    + "/div[2]/div[4]/div/p",
                 )
             )
         ).text
@@ -147,7 +150,8 @@ class StandardLife:
         # Grab all of the rows in the activity table
         rows = driver.find_elements(
             By.XPATH,
-            '//*[@id="tab-transaction"]/tcs-transaction-tab/div[2]/tcs-transaction-history/div[3]/table/tbody/tr',
+            '//*[@id="tab-transaction"]/tcs-transaction-tab/div[2]/tcs-transaction-history/div[3]'
+            + "/table/tbody/tr",
         )
         transaction_data = []
 
