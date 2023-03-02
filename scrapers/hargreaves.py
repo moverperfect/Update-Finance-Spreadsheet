@@ -11,7 +11,6 @@ class Hargreaves:
 
     def __init__(
         self,
-        driver: webdriver,
         username: str,
         dob: str,
         password: str,
@@ -19,29 +18,26 @@ class Hargreaves:
         accounts: list,
     ):
         """Initialize the instance variables for the class methods"""
-        self.driver = driver
         self.username = username
         self.dob = dob
         self.password = password
         self.secure_number = secure_number
         self.accounts = accounts
 
-    def scrape_data(self) -> list(dict[str, str]):
+    def scrape_data(self, driver) -> list(dict[str, str]):
         """Scrape transaction and portfolio data from the Hargreaves Lansdown website"""
         try:
-            # Use the driver instance
-            with self.driver as driver:
-                # Log into the website
-                self.__login(driver)
+            # Log into the website
+            self.__login(driver)
 
-                accounts_data = []
+            accounts_data = []
 
-                # For each defined account, check holdings and transactions
-                for account in self.accounts:
-                    accounts_data.append(self.__check_account(driver, account))
+            # For each defined account, check holdings and transactions
+            for account in self.accounts:
+                accounts_data.append(self.__check_account(driver, account))
 
-                # Return the data as a dictionary
-                return accounts_data
+            # Return the data as a dictionary
+            return accounts_data
         except Exception as exception:
             logging.error(exception)
             return []
