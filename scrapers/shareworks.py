@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Any
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -16,7 +17,7 @@ class ShareWorks:
         self.username = username
         self.passwd = passwd
 
-    def scrape_data(self, driver) -> dict[str, any]:
+    def scrape_data(self, driver) -> dict[str, Any]:
         """Scrape transaction and portfolio data from the Shareworks website"""
         try:
             # Set up wait and log in to Shareworks

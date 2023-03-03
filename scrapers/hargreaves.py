@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Any
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -111,7 +112,7 @@ class Hargreaves:
             )
         )
 
-    def __check_account(self, driver: webdriver, account_number: str) -> dict[str, any]:
+    def __check_account(self, driver: webdriver, account_number: str) -> dict[str, Any]:
         """Check the account number and return value, stocks, and transactions"""
         account_data = {"value": 0, "stocks": [], "transactions": []}
 
