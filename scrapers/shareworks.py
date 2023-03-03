@@ -1,48 +1,47 @@
 import logging
 import time
+from typing import Any
+
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select, WebDriverWait
 
 
 class ShareWorks:
     """A class for scraping data from the Shareworks website"""
 
-    def __init__(self, driver: webdriver.Chrome, host: str, username: str, passwd: str):
+    def __init__(self, host: str, username: str, passwd: str):
         """Initialize the instance variables for the class methods"""
-        self.driver: webdriver.Chrome = driver
         self.host = host
         self.username = username
         self.passwd = passwd
 
-    def scrape_data(self) -> dict[str, str]:
+    def scrape_data(self, driver) -> dict[str, Any]:
         """Scrape transaction and portfolio data from the Shareworks website"""
         try:
-            # Use the driver instance
-            with self.driver as driver:
-                # Set up wait and log in to Shareworks
-                wait = WebDriverWait(driver, 60)
-                self.__login(driver, wait)
+            # Set up wait and log in to Shareworks
+            wait = WebDriverWait(driver, 60)
+            self.__login(driver, wait)
 
-                # Grab transaction data
-                transaction_data = self.__get_transaction_data(driver, wait)
+            # Grab transaction data
+            transaction_data = self.__get_transaction_data(driver, wait)
 
-                # Naviagate to portfolio page and change dropdown to GBP
-                self.__prepare_portfolio_page(driver, wait)
+            # Naviagate to portfolio page and change dropdown to GBP
+            self.__prepare_portfolio_page(driver, wait)
 
-                # Grab exchange rate, current value, and total shares
-                exchange_rate = self.__get_exchange_rate(wait)
-                current_value = self.__get_current_value(wait)
-                total_shares = self.__get_total_shares(wait)
+            # Grab exchange rate, current value, and total shares
+            exchange_rate = self.__get_exchange_rate(wait)
+            current_value = self.__get_current_value(wait)
+            total_shares = self.__get_total_shares(wait)
 
-                # Return the data as a dictionary
-                return {
-                    "transactionData": transaction_data,
-                    "exchangeRate": exchange_rate,
-                    "currentValue": current_value,
-                    "totalShares": total_shares,
-                }
+            # Return the data as a dictionary
+            return {
+                "transactionData": transaction_data,
+                "exchangeRate": exchange_rate,
+                "currentValue": current_value,
+                "totalShares": total_shares,
+            }
         except Exception as exception:
             logging.error(exception)
             return {

@@ -1,9 +1,11 @@
 import logging
 import time
+from typing import Any
+
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 PENSION_SUMMARY_TAB = (
     '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
@@ -18,7 +20,7 @@ class StandardLife:
         self.username = username
         self.passwd = passwd
 
-    def scrape_data(self, driver: webdriver.Chrome) -> dict[str, str]:
+    def scrape_data(self, driver: webdriver.Chrome) -> dict[str, Any]:
         """Scrape transaction and portfolio data from the Standard Life website"""
         try:
             # Set up wait and log in to Standard Life
