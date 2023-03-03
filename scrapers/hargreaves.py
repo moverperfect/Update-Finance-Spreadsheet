@@ -25,7 +25,7 @@ class Hargreaves:
         self.secure_number = secure_number
         self.accounts = accounts
 
-    def scrape_data(self, driver) -> list(dict[str, str]):
+    def scrape_data(self, driver) -> list[dict[str, str]]:
         """Scrape transaction and portfolio data from the Hargreaves Lansdown website"""
         try:
             # Log into the website
@@ -111,7 +111,7 @@ class Hargreaves:
             )
         )
 
-    def __check_account(self, driver: webdriver, account_number: str) -> dict[str, str]:
+    def __check_account(self, driver: webdriver, account_number: str) -> dict[str, any]:
         """Check the account number and return value, stocks, and transactions"""
         account_data = {"value": 0, "stocks": [], "transactions": []}
 

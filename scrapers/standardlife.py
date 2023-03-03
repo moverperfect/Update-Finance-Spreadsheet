@@ -18,7 +18,7 @@ class StandardLife:
         self.username = username
         self.passwd = passwd
 
-    def scrape_data(self, driver: webdriver.Chrome) -> dict[str, str]:
+    def scrape_data(self, driver: webdriver.Chrome) -> dict[str, any]:
         """Scrape transaction and portfolio data from the Standard Life website"""
         try:
             # Set up wait and log in to Standard Life
