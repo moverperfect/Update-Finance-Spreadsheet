@@ -15,3 +15,4 @@ PRE_COMMANDS:
     cwd: 'workspace'
   - command: mkdir .mypy_cache
     cwd: 'workspace'
+COPYPASTE_JSCPD_ARGUMENTS: --ignore-pattern "(?<=^|\n)(import|from) .*$"
