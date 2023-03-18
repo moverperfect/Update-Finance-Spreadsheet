@@ -3,10 +3,10 @@ import time
 from typing import Any
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.remote.webdriver import WebDriver
 
 
 class ShareWorks:
