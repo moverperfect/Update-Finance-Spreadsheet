@@ -11,5 +11,6 @@
     "**/.idea/**",
     "**/report/**",
     "**/*.svg"
-  ]
+  ],
+  "ignore-pattern": ["import.*froms*'.*'"]
 }
