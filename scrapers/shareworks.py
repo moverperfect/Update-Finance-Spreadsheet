@@ -2,10 +2,11 @@ import logging
 import time
 from typing import Any
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import Select, WebDriverWait
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 class ShareWorks:
@@ -54,7 +55,7 @@ class ShareWorks:
             # Ensure the driver is back to default content before exiting
             driver.switch_to.default_content()
 
-    def __login(self, driver: webdriver, wait: WebDriverWait):
+    def __login(self, driver: WebDriver, wait: WebDriverWait):
         """Log into the website on the driver"""
         # Navigate to the login page
         driver.get("https://" + self.host + "/solium/servlet/userLogin.do")
@@ -85,7 +86,7 @@ class ShareWorks:
             )
         )
 
-    def __get_transaction_data(self, driver: webdriver, wait: WebDriverWait) -> list:
+    def __get_transaction_data(self, driver: WebDriver, wait: WebDriverWait) -> list:
         """Open the transaction page, select all history from dropdown
         and collect all transaction history"""
         # Select the Activity Page
@@ -149,7 +150,7 @@ class ShareWorks:
         # Return the transaction data
         return transaction_data
 
-    def __prepare_portfolio_page(self, driver: webdriver, wait: WebDriverWait):
+    def __prepare_portfolio_page(self, driver: WebDriver, wait: WebDriverWait):
         """Loads the portfolio page and selects the GBP exchange rate conversion"""
         # Navigate to the portfolio page
         driver.get("https://" + self.host + "/solium/servlet/ui/portfolio/holdings")
