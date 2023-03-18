@@ -1,9 +1,10 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+
 from scrapers.hargreaves import Hargreaves
 from scrapers.nutmeg import Nutmeg
 from scrapers.shareworks import ShareWorks
 from scrapers.standardlife import StandardLife
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 from utils.secrets import read_secrets
 
 if __name__ == "__main__":
