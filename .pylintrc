@@ -12,7 +12,8 @@
 disable=R0903, # Too few public methods
         W0718, # Broad Exception Caught
         C0114, # Missing Module Docstring
-        R0913 # Too Many Arguments
+        R0913, # Too Many Arguments
+        E0401  # Import Error
 
 # Good variable names which should always be accepted, separated by a comma
 good-names=i,j,k,ex,Run,_,pk,x,y
