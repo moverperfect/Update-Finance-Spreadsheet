@@ -5,7 +5,8 @@ from typing import Any
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.remote.webdriver import WebDriver
 
 PENSION_SUMMARY_TAB = (
     '//*[@id="tab-summary"]/tcs-pensions-summary-tab/tcs-view-plan-summary-pension'
@@ -20,7 +21,7 @@ class StandardLife:
         self.username = username
         self.passwd = passwd
 
-    def scrape_data(self, driver: webdriver.Chrome) -> dict[str, Any]:
+    def scrape_data(self, driver: WebDriver) -> dict[str, Any]:
         """Scrape transaction and portfolio data from the Standard Life website"""
         try:
             # Set up wait and log in to Standard Life
@@ -75,7 +76,7 @@ class StandardLife:
                 "totalValue": 0,
             }
 
-    def __login(self, driver: webdriver, wait: WebDriverWait):
+    def __login(self, driver: WebDriver, wait: WebDriverWait):
         """Log into the website on the driver"""
         # Navigate to the login page
         driver.get(
@@ -135,7 +136,7 @@ class StandardLife:
             )
         ).text
 
-    def __get_transaction_data(self, driver: webdriver, wait: WebDriverWait) -> list:
+    def __get_transaction_data(self, driver: WebDriver, wait: WebDriverWait) -> list:
         """Open the transaction page, select all history from dropdown
         and collect all transaction history"""
         # Select the Activity Page

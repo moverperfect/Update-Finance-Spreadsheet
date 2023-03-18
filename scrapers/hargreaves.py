@@ -5,7 +5,8 @@ from typing import Any
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.remote.webdriver import WebDriver
 
 
 class Hargreaves:
@@ -44,7 +45,7 @@ class Hargreaves:
             logging.error(exception)
             return []
 
-    def __login(self, driver: webdriver):
+    def __login(self, driver: WebDriver):
         """Log into the website on the driver"""
         # Navigate to the login page
         driver.get("https://online.hl.co.uk/my-accounts/login-step-one")
@@ -112,7 +113,7 @@ class Hargreaves:
             )
         )
 
-    def __check_account(self, driver: webdriver, account_number: str) -> dict[str, Any]:
+    def __check_account(self, driver: WebDriver, account_number: str) -> dict[str, Any]:
         """Check the account number and return value, stocks, and transactions"""
         account_data = {"value": 0, "stocks": [], "transactions": []}
 
@@ -139,7 +140,7 @@ class Hargreaves:
 
         return account_data
 
-    def __get_stock_data(self, driver: webdriver) -> list:
+    def __get_stock_data(self, driver: WebDriver) -> list:
         """Return the stock data from the account summary page
         Account summary page must be opened prior to function call"""
         stocks_data = []
@@ -176,7 +177,7 @@ class Hargreaves:
         return stocks_data
 
     def __get_transaction_data(
-        self, driver: webdriver, wait: WebDriverWait, account_number: str
+        self, driver: WebDriver, wait: WebDriverWait, account_number: str
     ) -> list:
         """Return the transaction data from the transactions page.
         Function will navigate to page"""
