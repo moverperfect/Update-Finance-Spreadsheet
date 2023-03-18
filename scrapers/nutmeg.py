@@ -44,7 +44,8 @@ class Nutmeg:
                 EC.element_to_be_clickable(
                     (
                         By.XPATH,
-                        "/html/body/div[3]/div/main/section/div/div/div/form/div[2]/button",
+                        "/html/body/div[3]/div/main/section"
+                        + "/div/div/div/form/div[2]/button",
                     )
                 )
             )

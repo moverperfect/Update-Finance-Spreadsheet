@@ -2,7 +2,6 @@ import logging
 import time
 from typing import Any
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -154,7 +153,8 @@ class StandardLife:
         # Grab all of the rows in the activity table
         rows = driver.find_elements(
             By.XPATH,
-            '//*[@id="tab-transaction"]/tcs-transaction-tab/div[2]/tcs-transaction-history/div[3]'
+            '//*[@id="tab-transaction"]/tcs-transaction-tab'
+            + "/div[2]/tcs-transaction-history/div[3]"
             + "/table/tbody/tr",
         )
         transaction_data = []
