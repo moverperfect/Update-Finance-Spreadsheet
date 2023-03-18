@@ -56,19 +56,19 @@ _Note: Make sure not to commit the secrets.json file to your repository, as it c
 
 1. Clone the repository:
 
-```
+```Shell
 git clone https://github.com/moverperfect/Update-Finance-Spreadsheet.git
 ```
 
 2. Change to the project directory:
 
-```
+```Shell
 cd Update-Finance-Spreadsheet
 ```
 
 3. Install the required packages:
 
-```
+```Shell
 pip install -r requirements.txt
 ```
 
@@ -76,7 +76,7 @@ pip install -r requirements.txt
 
 5. Run the `Main.py` script to start the scraping process:
 
-```
+```Shell
 python Main.py
 ```
 
