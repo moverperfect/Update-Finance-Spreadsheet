@@ -129,6 +129,8 @@ class Hargreaves:
             EC.element_to_be_clickable((By.XPATH, '//*[@id="account_total_header"]'))
         ).text
 
+        time.sleep(1)
+
         # Grab the stocks in the account
         account_data["stocks"] = self.__get_stock_data(driver)
 
@@ -148,28 +150,28 @@ class Hargreaves:
         stocks = driver.find_elements(By.XPATH, '//*[@id="holdings-table"]/tbody/tr')
 
         # For each stock, grab name, units, price, value, and cost
-        for x in range(1, len(stocks)):
+        for x in range(0, len(stocks)):
             stock_data = {}
             const_table_row = '//*[@id="holdings-table"]/tbody/tr['
             stock_data["stock"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[1]/div/a/span",
+                const_table_row + str(x + 1) + "]/td[1]/div/a/span",
             ).text
             stock_data["units"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[2]/span",
+                const_table_row + str(x + 1) + "]/td[2]/span",
             ).text
             stock_data["price(p)"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[3]/span",
+                const_table_row + str(x + 1) + "]/td[3]/span",
             ).text
             stock_data["value"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[4]/span/span",
+                const_table_row + str(x + 1) + "]/td[4]/span/span",
             ).text
             stock_data["cost"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[5]/span",
+                const_table_row + str(x + 1) + "]/td[5]/span",
             ).text
             stocks_data.append(stock_data)
 
