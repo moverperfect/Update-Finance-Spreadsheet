@@ -7,6 +7,7 @@ APPLY_FIXES: all # all, none, or list of linter keys
 DISABLE:
   - COPYPASTE
   - SPELL
+DISABLE_LINTERS:
   - PYTHON_ISORT
 SHOW_ELAPSED_TIME: true
 FILEIO_REPORTER: false
