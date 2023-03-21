@@ -96,7 +96,8 @@ class Nutmeg:
         tables = driver.find_elements(By.CSS_SELECTOR, "table")
         headers = driver.find_elements(
             By.XPATH,
-            '//*[@id="root"]/section/section[2]/div/div/div/div/section/div/section[2]/section/section/h1/span',
+            '//*[@id="root"]/section/section[2]/div/div/div/div/section/div/section[2]'
+            + "/section/section/h1/span",
         )
 
         # Iterate over each table and its corresponding header
@@ -114,7 +115,8 @@ class Nutmeg:
                 transaction_data = {}
                 transaction_cells = transaction.find_elements(By.CSS_SELECTOR, "td")
 
-                # Extract and format the day, transaction type, pot, and amount from the transaction cells
+                # Extract and format the day, transaction type, pot, and amount from
+                # the transaction cells
                 day = int(transaction_cells[0].text.split()[1])
                 transaction_data["date"] = datetime(month.year, month.month, day)
                 transaction_data["transaction"] = transaction_cells[1].text
@@ -127,7 +129,8 @@ class Nutmeg:
                 ):
                     continue
 
-                # Remove unnecessary characters from the amount string and add the amount to the transaction data
+                # Remove unnecessary characters from the amount string and add the
+                # amount to the transaction data
                 transaction_data["amount"] = (
                     transaction_cells[3].text.replace("+", "").replace("£", "")
                 )
@@ -141,7 +144,8 @@ class Nutmeg:
 
         :param driver: A WebDriver instance for browser automation.
         :param wait: A WebDriverWait instance for waiting for elements to load.
-        :return: A dictionary containing the net contributions and current value of the portfolio.
+        :return: A dictionary containing the net contributions
+        and current value of the portfolio.
         """
 
         # Navigate to the portfolio page
