@@ -205,36 +205,36 @@ class Hargreaves:
         transactions_data = []
 
         # For each transaction, grab the relevent transaction data
-        for x in range(1, len(transactions)):
+        for x in range(0, len(transactions)):
             transaction_data = {}
             const_table_row = '//*[@id="content-body-full"]/table/tbody/tr['
             transaction_data["tradeDate"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[1]",
+                const_table_row + str(x + 1) + "]/td[1]",
             ).text
             transaction_data["settleDate"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[2]",
+                const_table_row + str(x + 1) + "]/td[2]",
             ).text
             transaction_data["reference"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[3]",
+                const_table_row + str(x + 1) + "]/td[3]",
             ).text
             transaction_data["description"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[4]",
+                const_table_row + str(x + 1) + "]/td[4]",
             ).text
             transaction_data["unitCost"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[5]",
+                const_table_row + str(x + 1) + "]/td[5]",
             ).text
             transaction_data["quantity"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[6]",
+                const_table_row + str(x + 1) + "]/td[6]",
             ).text
             transaction_data["value"] = driver.find_element(
                 By.XPATH,
-                const_table_row + str(x) + "]/td[7]",
+                const_table_row + str(x + 1) + "]/td[7]",
             ).text
             transactions_data.append(transaction_data)
 
