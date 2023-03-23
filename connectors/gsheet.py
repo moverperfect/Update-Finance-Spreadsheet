@@ -15,33 +15,32 @@ class GoogleSheets:
             authorized_user_filename="./authorized_user.json",
         )
 
+        # Open the sheet using its key
+        self.sheet = self.client.open_by_key(self.spreadsheet_id)
+
     def read_cell(self, worksheet_name, cell_address):
         """Read the value of a cell in a worksheet"""
-        # Open the sheet using its key
-        with self.client.open_by_key(self.spreadsheet_id) as sheet:
-            # Get the worksheet by name
-            worksheet = sheet.worksheet(worksheet_name)
-            # Get the cell by address
-            cell = worksheet.acell(cell_address)
-            # Return the cell value
-            return cell.value
+
+        # Get the worksheet by name
+        worksheet = self.sheet.worksheet(worksheet_name)
+        # Get the cell by address
+        cell = worksheet.acell(cell_address)
+        # Return the cell value
+        return cell.value
 
     def write_cell(self, worksheet_name, cell_address, value):
         """Write a value to a cell in a worksheet"""
-        # Open the sheet using its key
-        with self.client.open_by_key(self.spreadsheet_id) as sheet:
-            # Get the worksheet by name
-            worksheet = sheet.worksheet(worksheet_name)
-            # Update the cell value
-            worksheet.update_acell(cell_address, value)
+
+        # Get the worksheet by name
+        worksheet = self.sheet.worksheet(worksheet_name)
+        # Update the cell value
+        worksheet.update_acell(cell_address, value)
 
     def read_range(self, worksheet_name, range_address):
         """Read the values of a range of cells in a worksheet"""
-        # Open the sheet using its key
-        sheet = self.client.open_by_key(self.spreadsheet_id)
 
         # Get the worksheet by name
-        worksheet = sheet.worksheet(worksheet_name)
+        worksheet = self.sheet.worksheet(worksheet_name)
 
         # Get the range of cells
         cells = worksheet.range(range_address)
@@ -51,11 +50,9 @@ class GoogleSheets:
 
     def write_range(self, worksheet_name, range_address, values):
         """Write values to a range of cells in a worksheet"""
-        # Open the sheet using its key
-        sheet = self.client.open_by_key(self.spreadsheet_id)
 
         # Get the worksheet by name
-        worksheet = sheet.worksheet(worksheet_name)
+        worksheet = self.sheet.worksheet(worksheet_name)
 
         # Calculate dimensions of the range
         start_cell, end_cell = range_address.split(":")
