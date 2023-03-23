@@ -71,7 +71,8 @@ class GoogleSheets:
         # Verify if the dimensions match
         if len(values_2d) != num_rows or len(values_2d[0]) != num_cols:
             raise ValueError(
-                "The dimensions of the input values do not match the dimensions of the range"
+                "The dimensions of the input values do not match "
+                + "the dimensions of the range"
             )
 
         # Update the values of the cells

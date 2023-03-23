@@ -67,15 +67,11 @@ class Moverperfect:
 
         # Iterate through the transactions in reversed(ascending) order
         for i, transaction in enumerate(reversed(nutmeg_data["transactions"])):
-            # If the date of the current transaction matches the date in the sheet, start inserting transactions
+            # If the date of the current transaction matches the date in the sheet
             if previous_date_matches(sheet, empty_row_index, transaction["date"]):
                 # Iterate through the transactions in reversed(asc) order inserting them
-                for j, previous_transaction in enumerate(
-                    reversed(
-                        nutmeg_data["transactions"][
-                            : len(nutmeg_data["transactions"]) - i
-                        ]
-                    )
+                for previous_transaction in reversed(
+                    nutmeg_data["transactions"][: len(nutmeg_data["transactions"]) - i]
                 ):
                     # Skip transaction if it already exists in the sheet
                     if previous_date_matches(
