@@ -1,3 +1,5 @@
+import datetime
+
 from connectors.gsheet import GoogleSheets
 
 
@@ -21,7 +23,7 @@ class Moverperfect:
         sheet = GoogleSheets(secrets["SHEET_ID"])
 
         Moverperfect.__nutmeg(sheet, nutmeg_data)
-        Moverperfect.__shareworks(shareworks_data)
+        Moverperfect.__shareworks(sheet, shareworks_data)
         Moverperfect.__standard_life(standard_life_data)
         Moverperfect.__hargreaves(hargreaves_data)
 
@@ -33,21 +35,10 @@ class Moverperfect:
         :param nutmeg_data: Data from the Nutmeg platform.
         """
 
-        # Function to find the index of the first empty row within a given range
-        def find_empty_row(sheet, worksheet, start_row, end_row, column):
-            # Read the specified range of rows from the sheet
-            dates = sheet.read_range(
-                worksheet, f"{column}{start_row}:{column}{end_row}"
-            )
-
-            # Iterate through the rows and find the first empty one
-            for index, date in enumerate(dates):
-                if date.value == "":
-                    return index + start_row
-            return None
-
         # Function to check if the date in a given row-1 matches the transaction_date
-        def previous_date_matches(sheet, index, transaction_date):
+        def previous_date_matches(
+            sheet: GoogleSheets, index: int, transaction_date: datetime.datetime
+        ):
             # Read the date from the specified row
             dates = sheet.read_range("Nutmeg", f"A{index - 1}:A{index - 1}")
 
@@ -59,13 +50,17 @@ class Moverperfect:
         end_row = 100
 
         # Find the index of the first empty row within the initial range
-        empty_row_index = find_empty_row(sheet, "Nutmeg", start_row, end_row, "A")
+        empty_row_index = Moverperfect.__find_empty_row(
+            sheet, "Nutmeg", start_row, end_row, "A"
+        )
 
         # Keep searching for an empty row in the next 100-row blocks until one is found
         while empty_row_index is None:
             start_row += 100
             end_row += 100
-            empty_row_index = find_empty_row(sheet, "Nutmeg", start_row, end_row, "A")
+            empty_row_index = Moverperfect.__find_empty_row(
+                sheet, "Nutmeg", start_row, end_row, "A"
+            )
 
         # Iterate through the transactions in reversed(ascending) order
         for i, transaction in enumerate(reversed(nutmeg_data["transactions"])):
@@ -103,7 +98,7 @@ class Moverperfect:
         end_row = 100
 
         # Find the index of the first empty row within the initial range
-        empty_row_index = find_empty_row(
+        empty_row_index = Moverperfect.__find_empty_row(
             sheet, "Nutmeg Monthly", start_row, end_row, "H"
         )
 
@@ -111,7 +106,7 @@ class Moverperfect:
         while empty_row_index is None:
             start_row += 100
             end_row += 100
-            empty_row_index = find_empty_row(
+            empty_row_index = Moverperfect.__find_empty_row(
                 sheet, "Nutmeg Monthly", start_row, end_row, "H"
             )
 
@@ -123,13 +118,142 @@ class Moverperfect:
         )
 
     @staticmethod
-    def __shareworks(shareworks_data):
+    def __shareworks(sheet: GoogleSheets, shareworks_data):
         """
         Insert Shareworks platform data into Google Spreadsheet.
 
         :param shareworks_data: Data from the Shareworks platform.
         """
-        return
+
+        sheet_name = "Share Purchase Plan"
+
+        def compare_date_1_greater_2(date_1: str, date_2: str) -> bool:
+            return datetime.datetime.strptime(
+                date_1, "%d/%m/%Y"
+            ) > datetime.datetime.strptime(date_2, "%d/%m/%Y")
+
+        def format_date(date_str: str) -> str:
+            return datetime.datetime.strptime(date_str, "%d-%b-%Y").strftime("%d/%m/%Y")
+
+        def insert_shareworks_transaction(
+            transaction: list[str], row_index: int
+        ) -> None:
+            """
+            Insert a single Shareworks transaction into the Google Sheet.
+
+            :param transaction: A single Shareworks transaction as a list of strings.
+            :param row_index: The row index in the Google Sheet to insert the
+            transaction.
+            """
+            sheet.write_range(
+                sheet_name,
+                f"A{row_index}:M{row_index}",
+                [
+                    formatted_date := format_date(transaction[0]),
+                    formatted_date,
+                    "PAYROLL PURCHASE",
+                    formatted_value := transaction[5].replace("$", ""),
+                    f"={transaction[6].replace('$', '')}*2",
+                    formatted_value,
+                    f"={transaction[4]}*2",
+                    "",
+                    "=NA()",
+                    "=NA()",
+                    "=NA()",
+                    "=NA()",
+                    "=NA()",
+                ],
+            )
+
+        # Initialize the starting and ending row indices
+        start_row = 1
+        end_row = 100
+
+        # Find the index of the first empty row within the initial range
+        empty_row_index = Moverperfect.__find_empty_row(
+            sheet, sheet_name, start_row, end_row, "A"
+        )
+
+        # Keep searching for an empty row in the next 100-row blocks until one is found
+        while empty_row_index is None:
+            start_row += 100
+            end_row += 100
+            empty_row_index = Moverperfect.__find_empty_row(
+                sheet, sheet_name, start_row, end_row, "A"
+            )
+
+        last_transaction_date = next(
+            (
+                sheet.read_cell(sheet_name, f"A{search_row}")
+                for search_row in range(empty_row_index, 1, -1)
+                if sheet.read_cell(sheet_name, f"C{search_row}") is not None
+            ),
+            "01/01/1970",
+        )
+
+        relevant_transactions = [
+            transaction
+            for transaction in reversed(shareworks_data["transactionData"])
+            if transaction[1] == "You bought"
+        ]
+
+        for i in range(len(relevant_transactions) - 1, -1, -2):
+            transaction = relevant_transactions[i]
+            if (
+                compare_date_1_greater_2(
+                    last_transaction_date, format_date(transaction[0])
+                )
+                or format_date(transaction[0]) == last_transaction_date
+            ):
+                continue
+            insert_shareworks_transaction(transaction, empty_row_index)
+            empty_row_index = empty_row_index + 1
+
+        i = empty_row_index - 1
+        # Iterate through rows in reverse to find the first non-empty cell in column C
+        for i in range(empty_row_index - 1, 1, -1):
+            if sheet.read_cell(sheet_name, f"C{i}") is None:
+                break
+
+        # Define reusable expressions for formulas
+        sum_formula = (
+            f"SUM(ARRAYFORMULA(G{i+1}:G{empty_row_index-1} "
+            + f"* F{i+1}:F{empty_row_index-1}))"
+        )
+        sum_previous_rows = f"SUM(E{i+1}:E{empty_row_index-1})"
+
+        sheet.write_range(
+            sheet_name,
+            f"A{empty_row_index}:M{empty_row_index}",
+            [
+                datetime.datetime.now().strftime("%d/%m/%Y"),
+                datetime.datetime.now().strftime("%d/%m/%Y"),
+                "",
+                "",
+                "",
+                shareworks_data["sharePrice"].replace("$", ""),
+                f"=SUM(G{i}:G{empty_row_index - 1})",
+                shareworks_data["exchangeRate"],
+                f"=(F{empty_row_index}*G{empty_row_index})*H{empty_row_index}",
+                # Previous Calculated Return +
+                # (((New Number of Shares * Current Stock Price) -
+                # (Previous Number of Shares * Previous Stock Price)) -
+                # (Number of Shares Purchased * Purchase Price)) *
+                # (USD/GBP Exchange Rate)
+                f"=IF(H{empty_row_index}=0,0,J{i} + "
+                + f"((G{empty_row_index} * F{empty_row_index}) - "
+                + f"(G{i} * F{i}) - "
+                + f"({0 if (i+1) == empty_row_index else sum_formula})) * "
+                + f"H{empty_row_index})",
+                f"=J{empty_row_index}/I{empty_row_index}",
+                # (Purchase amount in $/2) *
+                # Exchange Rate+Return in £
+                f"=IF(F{empty_row_index}=0,0,("
+                + f"{0 if (i+1) == empty_row_index else sum_previous_rows}/2)"
+                + f"*H{empty_row_index}+J{empty_row_index})",
+                f"=I{empty_row_index}/2+J{empty_row_index}/2",
+            ],
+        )
 
     @staticmethod
     def __standard_life(standard_life_data):
@@ -148,3 +272,15 @@ class Moverperfect:
         :param hargreaves_data: Data from the Hargreaves Lansdown platform.
         """
         return
+
+    # Function to find the index of the first empty row within a given range
+    @staticmethod
+    def __find_empty_row(sheet, worksheet, start_row, end_row, column):
+        # Read the specified range of rows from the sheet
+        dates = sheet.read_range(worksheet, f"{column}{start_row}:{column}{end_row}")
+
+        # Iterate through the rows and find the first empty one
+        for index, date in enumerate(dates):
+            if date.value == "":
+                return index + start_row
+        return None
