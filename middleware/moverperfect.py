@@ -37,7 +37,7 @@ class Moverperfect:
 
         # Function to check if the date in a given row-1 matches the transaction_date
         def previous_date_matches(
-            sheet: GoogleSheets, index: int, transaction_date: datetime
+            sheet: GoogleSheets, index: int, transaction_date: datetime.datetime
         ):
             # Read the date from the specified row
             dates = sheet.read_range("Nutmeg", f"A{index - 1}:A{index - 1}")
@@ -125,7 +125,7 @@ class Moverperfect:
         :param shareworks_data: Data from the Shareworks platform.
         """
 
-        SHEET_NAME = "Share Purchase Plan"
+        sheet_name = "Share Purchase Plan"
 
         def compare_date_1_greater_2(date_1: str, date_2: str) -> bool:
             return datetime.datetime.strptime(
@@ -142,10 +142,11 @@ class Moverperfect:
             Insert a single Shareworks transaction into the Google Sheet.
 
             :param transaction: A single Shareworks transaction as a list of strings.
-            :param row_index: The row index in the Google Sheet to insert the transaction.
+            :param row_index: The row index in the Google Sheet to insert the
+            transaction.
             """
             sheet.write_range(
-                SHEET_NAME,
+                sheet_name,
                 f"A{row_index}:M{row_index}",
                 [
                     formatted_date := format_date(transaction[0]),
@@ -170,7 +171,7 @@ class Moverperfect:
 
         # Find the index of the first empty row within the initial range
         empty_row_index = Moverperfect.__find_empty_row(
-            sheet, SHEET_NAME, start_row, end_row, "A"
+            sheet, sheet_name, start_row, end_row, "A"
         )
 
         # Keep searching for an empty row in the next 100-row blocks until one is found
@@ -178,16 +179,16 @@ class Moverperfect:
             start_row += 100
             end_row += 100
             empty_row_index = Moverperfect.__find_empty_row(
-                sheet, SHEET_NAME, start_row, end_row, "A"
+                sheet, sheet_name, start_row, end_row, "A"
             )
 
         last_transaction_date = next(
             (
-                sheet.read_cell(SHEET_NAME, f"A{search_row}")
+                sheet.read_cell(sheet_name, f"A{search_row}")
                 for search_row in range(empty_row_index, 1, -1)
-                if sheet.read_cell(SHEET_NAME, f"C{search_row}") is not None
+                if sheet.read_cell(sheet_name, f"C{search_row}") is not None
             ),
-            None,
+            "01/01/1970",
         )
 
         relevant_transactions = [
@@ -208,17 +209,21 @@ class Moverperfect:
             insert_shareworks_transaction(transaction, empty_row_index)
             empty_row_index = empty_row_index + 1
 
+        i = empty_row_index - 1
         # Iterate through rows in reverse to find the first non-empty cell in column C
         for i in range(empty_row_index - 1, 1, -1):
-            if sheet.read_cell(SHEET_NAME, f"C{i}") is None:
+            if sheet.read_cell(sheet_name, f"C{i}") is None:
                 break
 
         # Define reusable expressions for formulas
-        sum_formula = f"SUM(ARRAYFORMULA(G{i+1}:G{empty_row_index-1} * F{i+1}:F{empty_row_index-1}))"
+        sum_formula = (
+            f"SUM(ARRAYFORMULA(G{i+1}:G{empty_row_index-1} "
+            + f"* F{i+1}:F{empty_row_index-1}))"
+        )
         sum_previous_rows = f"SUM(E{i+1}:E{empty_row_index-1})"
 
         sheet.write_range(
-            SHEET_NAME,
+            sheet_name,
             f"A{empty_row_index}:M{empty_row_index}",
             [
                 datetime.datetime.now().strftime("%d/%m/%Y"),
@@ -241,12 +246,14 @@ class Moverperfect:
                 + f"({0 if (i+1) == empty_row_index else sum_formula})) * "
                 + f"H{empty_row_index})",
                 f"=J{empty_row_index}/I{empty_row_index}",
-                f"=IF(F{empty_row_index}=0,0,({0 if (i+1) == empty_row_index else sum_previous_rows}/2)*H{empty_row_index}+J{empty_row_index})",
+                # (Purchase amount in $/2) *
+                # Exchange Rate+Return in £
+                f"=IF(F{empty_row_index}=0,0,("
+                + f"{0 if (i+1) == empty_row_index else sum_previous_rows}/2)"
+                + f"*H{empty_row_index}+J{empty_row_index})",
                 f"=I{empty_row_index}/2+J{empty_row_index}/2",
             ],
         )
-
-        return
 
     @staticmethod
     def __standard_life(standard_life_data):
