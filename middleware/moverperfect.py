@@ -9,9 +9,7 @@ class Moverperfect:
     """
 
     @staticmethod
-    def insert_all(
-        secrets, nutmeg_data, shareworks_data, standard_life_data, hargreaves_data
-    ):
+    def insert_all(secrets, nutmeg_data, shareworks_data, standard_life_data):
         """
         Insert data from all investment platforms into Google Spreadsheet.
 
@@ -24,8 +22,8 @@ class Moverperfect:
 
         Moverperfect.__nutmeg(sheet, nutmeg_data)
         Moverperfect.__shareworks(sheet, shareworks_data)
-        Moverperfect.__standard_life(standard_life_data)
-        Moverperfect.__hargreaves(hargreaves_data)
+        Moverperfect.__standard_life(sheet, standard_life_data)
+        # Moverperfect.__hargreaves(hargreaves_data)
 
     @staticmethod
     def __nutmeg(sheet: GoogleSheets, nutmeg_data):
@@ -50,17 +48,13 @@ class Moverperfect:
         end_row = 100
 
         # Find the index of the first empty row within the initial range
-        empty_row_index = Moverperfect.__find_empty_row(
-            sheet, "Nutmeg", start_row, end_row, "A"
-        )
+        empty_row_index = __find_empty_row(sheet, "Nutmeg", start_row, end_row, "A")
 
         # Keep searching for an empty row in the next 100-row blocks until one is found
         while empty_row_index is None:
             start_row += 100
             end_row += 100
-            empty_row_index = Moverperfect.__find_empty_row(
-                sheet, "Nutmeg", start_row, end_row, "A"
-            )
+            empty_row_index = __find_empty_row(sheet, "Nutmeg", start_row, end_row, "A")
 
         # Iterate through the transactions in reversed(ascending) order
         for i, transaction in enumerate(reversed(nutmeg_data["transactions"])):
@@ -98,7 +92,7 @@ class Moverperfect:
         end_row = 100
 
         # Find the index of the first empty row within the initial range
-        empty_row_index = Moverperfect.__find_empty_row(
+        empty_row_index = __find_empty_row(
             sheet, "Nutmeg Monthly", start_row, end_row, "H"
         )
 
@@ -106,7 +100,7 @@ class Moverperfect:
         while empty_row_index is None:
             start_row += 100
             end_row += 100
-            empty_row_index = Moverperfect.__find_empty_row(
+            empty_row_index = __find_empty_row(
                 sheet, "Nutmeg Monthly", start_row, end_row, "H"
             )
 
@@ -126,11 +120,6 @@ class Moverperfect:
         """
 
         sheet_name = "Share Purchase Plan"
-
-        def compare_date_1_greater_2(date_1: str, date_2: str) -> bool:
-            return datetime.datetime.strptime(
-                date_1, "%d/%m/%Y"
-            ) > datetime.datetime.strptime(date_2, "%d/%m/%Y")
 
         def format_date(date_str: str) -> str:
             return datetime.datetime.strptime(date_str, "%d-%b-%Y").strftime("%d/%m/%Y")
@@ -170,15 +159,13 @@ class Moverperfect:
         end_row = 100
 
         # Find the index of the first empty row within the initial range
-        empty_row_index = Moverperfect.__find_empty_row(
-            sheet, sheet_name, start_row, end_row, "A"
-        )
+        empty_row_index = __find_empty_row(sheet, sheet_name, start_row, end_row, "A")
 
         # Keep searching for an empty row in the next 100-row blocks until one is found
         while empty_row_index is None:
             start_row += 100
             end_row += 100
-            empty_row_index = Moverperfect.__find_empty_row(
+            empty_row_index = __find_empty_row(
                 sheet, sheet_name, start_row, end_row, "A"
             )
 
@@ -200,7 +187,7 @@ class Moverperfect:
         for i in range(len(relevant_transactions) - 1, -1, -2):
             transaction = relevant_transactions[i]
             if (
-                compare_date_1_greater_2(
+                __compare_date_1_greater_2(
                     last_transaction_date, format_date(transaction[0])
                 )
                 or format_date(transaction[0]) == last_transaction_date
@@ -256,31 +243,128 @@ class Moverperfect:
         )
 
     @staticmethod
-    def __standard_life(standard_life_data):
+    def __standard_life(sheet: GoogleSheets, standard_life_data):
         """
         Insert Standard Life platform data into Google Spreadsheet.
 
         :param standard_life_data: Data from the Standard Life platform.
         """
-        return
 
-    @staticmethod
-    def __hargreaves(hargreaves_data):
-        """
-        Insert Hargreaves Lansdown platform data into Google Spreadsheet.
+        def insert_standardlife_transaction(
+            transaction: list[str], row_index: int
+        ) -> None:
+            """
+            Insert a single Standard Life transaction into the Google Sheet.
 
-        :param hargreaves_data: Data from the Hargreaves Lansdown platform.
-        """
-        return
+            :param transaction: A single Standard Life transaction as a list of strings.
+            :param row_index: The row index in the Google Sheet to insert the
+            transaction.
+            """
+            sheet.write_range(
+                sheet_name,
+                f"A{row_index}:C{row_index}",
+                [
+                    transaction[1],
+                    transaction[2].replace("£", ""),
+                    transaction[2].replace("£", ""),
+                ],
+            )
 
-    # Function to find the index of the first empty row within a given range
-    @staticmethod
-    def __find_empty_row(sheet, worksheet, start_row, end_row, column):
-        # Read the specified range of rows from the sheet
-        dates = sheet.read_range(worksheet, f"{column}{start_row}:{column}{end_row}")
+        sheet_name = "Pension"
 
-        # Iterate through the rows and find the first empty one
-        for index, date in enumerate(dates):
-            if date.value == "":
-                return index + start_row
-        return None
+        # Initialize the starting and ending row indices
+        start_row = 1
+        end_row = 100
+
+        # Find the index of the first empty row within the initial range
+        empty_row_index = __find_empty_row(sheet, sheet_name, start_row, end_row, "A")
+
+        # Keep searching for an empty row in the next 100-row blocks until one is found
+        while empty_row_index is None:
+            start_row += 100
+            end_row += 100
+            empty_row_index = __find_empty_row(
+                sheet, sheet_name, start_row, end_row, "A"
+            )
+
+        last_transaction_date = next(
+            (
+                sheet.read_cell(sheet_name, f"A{search_row}")
+                for search_row in range(empty_row_index, 1, -1)
+                if sheet.read_cell(sheet_name, f"B{search_row}") is not None
+            ),
+            "01/01/1970",
+        )
+
+        # Insert new transactions
+        for i in range(len(standard_life_data["transactionData"]) - 1, -1, -1):
+            transaction = standard_life_data["transactionData"][i]
+            if (
+                __compare_date_1_greater_2(last_transaction_date, transaction[1])
+                or transaction[1] == last_transaction_date
+            ):
+                continue
+            insert_standardlife_transaction(transaction, empty_row_index)
+            empty_row_index = empty_row_index + 1
+
+        # Insert latest valuation
+        sheet.write_range(
+            sheet_name,
+            f"A{empty_row_index}:G{empty_row_index}",
+            [
+                datetime.datetime.now().strftime("%d/%m/%Y"),
+                "",
+                "",
+                standard_life_data["totalPayments"],
+                standard_life_data["investmentGrowth"],
+                f"=E{empty_row_index}/D{empty_row_index}",
+                f"=D{empty_row_index}+E{empty_row_index}",
+            ],
+        )
+
+    # @staticmethod
+    # def __hargreaves(hargreaves_data):
+    #     """
+    #     Insert Hargreaves Lansdown platform data into Google Spreadsheet.
+
+    #     :param hargreaves_data: Data from the Hargreaves Lansdown platform.
+    #     """
+    #     return
+
+
+def __find_empty_row(
+    sheet: GoogleSheets, worksheet: str, start_row: int, end_row: int, column: str
+) -> int | None:
+    """
+    Find the first empty row within a specified range in a Google Sheet.
+
+    :param sheet: The Google Sheet instance.
+    :param worksheet: The name of the worksheet to search.
+    :param start_row: The starting row index to search.
+    :param end_row: The ending row index to search.
+    :param column: The column letter to search for an empty row.
+    :return: The index of the first empty row, or None if no empty row is found.
+    """
+
+    # Read the specified range of rows from the sheet
+    dates = sheet.read_range(worksheet, f"{column}{start_row}:{column}{end_row}")
+
+    # Iterate through the rows and find the first empty one
+    for index, date in enumerate(dates):
+        if date.value == "":
+            return index + start_row
+    return None
+
+
+def __compare_date_1_greater_2(date_1: str, date_2: str) -> bool:
+    """
+    Compare two date strings and return True if date_1 is greater than date_2.
+
+    :param date_1: The first date string in the format "%d/%m/%Y".
+    :param date_2: The second date string in the format "%d/%m/%Y".
+    :return: True if date_1 is greater than date_2, False otherwise.
+    """
+
+    return datetime.datetime.strptime(date_1, "%d/%m/%Y") > datetime.datetime.strptime(
+        date_2, "%d/%m/%Y"
+    )
