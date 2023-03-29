@@ -9,7 +9,9 @@ class Moverperfect:
     """
 
     @staticmethod
-    def insert_all(secrets, nutmeg_data, shareworks_data, standard_life_data):
+    def insert_all(
+        secrets, nutmeg_data, shareworks_data, standard_life_data, hargreaves_data
+    ):
         """
         Insert data from all investment platforms into Google Spreadsheet.
 
@@ -23,7 +25,9 @@ class Moverperfect:
         Moverperfect.__nutmeg(sheet, nutmeg_data)
         Moverperfect.__shareworks(sheet, shareworks_data)
         Moverperfect.__standard_life(sheet, standard_life_data)
-        # Moverperfect.__hargreaves(hargreaves_data)
+
+        hargreaves_sheet = GoogleSheets(secrets["SHEET_ID_2"])
+        Moverperfect.__hargreaves(hargreaves_sheet, hargreaves_data)
 
     @staticmethod
     def __nutmeg(sheet: GoogleSheets, nutmeg_data):
@@ -352,14 +356,95 @@ class Moverperfect:
             ],
         )
 
-    # @staticmethod
-    # def __hargreaves(hargreaves_data):
-    #     """
-    #     Insert Hargreaves Lansdown platform data into Google Spreadsheet.
+    @staticmethod
+    def __hargreaves(sheet: GoogleSheets, hargreaves_data):
+        """
+        Insert Hargreaves Lansdown platform data into Google Spreadsheet.
 
-    #     :param hargreaves_data: Data from the Hargreaves Lansdown platform.
-    #     """
-    #     return
+        :param hargreaves_data: Data from the Hargreaves Lansdown platform.
+        """
+
+        def insert_hargreaves_transaction(
+            transaction: dict[str, str], row_index: int
+        ) -> None:
+            """
+            Insert a single Standard Life transaction into the Google Sheet.
+
+            :param transaction: A single Standard Life transaction as a list of strings.
+            :param row_index: The row index in the Google Sheet to insert the
+            transaction.
+            """
+            sheet.write_range(
+                tran_sheet_name,
+                f"A{row_index}:G{row_index}",
+                [
+                    transaction["tradeDate"],
+                    transaction["settleDate"],
+                    transaction["reference"],
+                    "Cash"
+                    if transaction["unitCost"] == "n/a"
+                    else transaction["description"],
+                    transaction["unitCost"],
+                    transaction["quantity"],
+                    transaction["value"],
+                ],
+            )
+
+        tran_sheet_name = "Transactions"
+
+        # Initialize the starting and ending row indices
+        start_row = 1
+        end_row = 100
+
+        # Find the index of the first empty row within the initial range
+        empty_row_index = Moverperfect.__find_empty_row(
+            sheet, tran_sheet_name, start_row, end_row, "A"
+        )
+
+        # Keep searching for an empty row in the next 100-row blocks until one is found
+        while empty_row_index is None:
+            start_row += 100
+            end_row += 100
+            empty_row_index = Moverperfect.__find_empty_row(
+                sheet, tran_sheet_name, start_row, end_row, "A"
+            )
+
+        last_transaction_date = sheet.read_cell(
+            tran_sheet_name, f"A{empty_row_index - 1}"
+        )
+
+        for i in range(len(hargreaves_data[0]["transactions"]) - 1, -1, -1):
+            transaction = hargreaves_data[0]["transactions"][i]
+            if (
+                Moverperfect.__compare_date_1_greater_2(
+                    last_transaction_date, transaction["tradeDate"]
+                )
+                or transaction["tradeDate"] == last_transaction_date
+            ):
+                continue
+            insert_hargreaves_transaction(transaction, empty_row_index)
+            empty_row_index = empty_row_index + 1
+
+        fund_reference = sheet.read_range("Fund Reference", "E3:E10")
+
+        stock_mapping = {item["stock"]: item for item in hargreaves_data[0]["stocks"]}
+        stock_mapping["Unused"] = {"stock": "Unused", "price(p)": "0"}
+        sorted_stock_data = [stock_mapping[stock.value] for stock in fund_reference]
+
+        prices = [
+            float(stock_data["price(p)"].replace(",", "")) / 100
+            for stock_data in sorted_stock_data
+        ]
+
+        sheet.write_range("Fund Reference", "D3:D10", prices)
+
+        value_from_sheet = sheet.read_cell("Rebalancer", "D17")
+
+        if value_from_sheet != hargreaves_data[0]["value"]:
+            print(
+                f"ERROR: Value in Sheet: {value_from_sheet}. "
+                + f"Value expected: {hargreaves_data[0]['value']}"
+            )
 
     @staticmethod
     def __find_empty_row(
