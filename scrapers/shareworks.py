@@ -35,6 +35,7 @@ class ShareWorks:
             exchange_rate = self.__get_exchange_rate(wait)
             current_value = self.__get_current_value(wait)
             total_shares = self.__get_total_shares(wait)
+            share_price = transaction_data[len(transaction_data) - 1][5]
 
             # Return the data as a dictionary
             return {
@@ -42,6 +43,7 @@ class ShareWorks:
                 "exchangeRate": exchange_rate,
                 "currentValue": current_value,
                 "totalShares": total_shares,
+                "sharePrice": share_price,
             }
         except Exception as exception:
             logging.error(exception)
@@ -50,6 +52,7 @@ class ShareWorks:
                 "exchangeRate": 0,
                 "currentValue": 0,
                 "totalShares": 0,
+                "sharePrice": 0,
             }
         finally:
             # Ensure the driver is back to default content before exiting
