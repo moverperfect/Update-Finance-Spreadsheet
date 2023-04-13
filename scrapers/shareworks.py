@@ -107,9 +107,12 @@ class ShareWorks:
         ).click()
 
         # Switch the driver to the iframe and wait until the submit button loads
-        iframe = driver.find_element(
-            By.XPATH, '//*[@id="transaction-statement-iframe"]'
+        iframe = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, '//*[@id="transaction-statement-iframe"]')
+            )
         )
+
         driver.switch_to.frame(iframe)
         time.sleep(2)
         submit = wait.until(
