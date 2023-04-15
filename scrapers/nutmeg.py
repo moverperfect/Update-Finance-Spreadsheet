@@ -123,9 +123,7 @@ class Nutmeg:
                 transaction_data["pot"] = transaction_cells[2].text
 
                 # Filter out unwanted transaction data
-                if (
-                    transaction_data["pot"] == "Unallocated Cash"
-                ):
+                if transaction_data["pot"] == "Unallocated Cash":
                     continue
 
                 # Remove unnecessary characters from the amount string and add the
