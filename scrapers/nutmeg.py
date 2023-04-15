@@ -125,7 +125,6 @@ class Nutmeg:
                 # Filter out unwanted transaction data
                 if (
                     transaction_data["pot"] == "Unallocated Cash"
-                    or transaction_data["transaction"] != "Deposit"
                 ):
                     continue
 
